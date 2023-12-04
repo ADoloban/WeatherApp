@@ -17,7 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.main.bounds)
         
         if let window = window {
-            window.rootViewController = ViewController()
+             window.rootViewController = ViewController()
+            // window.rootViewController = HomePageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
             window.makeKeyAndVisible()
         }
         
