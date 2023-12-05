@@ -14,31 +14,71 @@ import SnapKit
 // 1. Learn how UIPageViewController works
 // 2. Add toolbar what you have in the ViewController to this HomePageViewController
 final class HomePageViewController: UIPageViewController {
+    
     private let pageControl = UIPageControl()
     private var pages: [UIViewController] = []
     private var initialPage = 0
+    
+//MARK: - GUI Variables
+    private lazy var toolBar: UIToolbar = {
+        let toolbar = UIToolbar()
 
+        return toolbar
+    }()
+
+// MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         dataSource = self
         delegate = self
-
-        // Setup PageControll
-        pageControl.addTarget(self, action: #selector(pageControlDidTap(_:)), for: .valueChanged)
-        pageControl.translatesAutoresizingMaskIntoConstraints = false
-        pageControl.numberOfPages = pages.count
-        pageControl.currentPage = initialPage
-        pageControl.tintColor = .white
-        pageControl.pageIndicatorTintColor = .gray
-        pageControl.currentPageIndicatorTintColor = .black
-        view.addSubview(pageControl)
-        pageControl.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
-
-        // setup test ViewControllers to represent Weathers Pages
+        
+        configureUI()
+    }
+    
+// MARK: - Private methods
+    @objc
+    private func pageControlDidTap(_ sender: UIPageControl) {
+        setViewControllers([pages[sender.currentPage]], direction: .forward, animated: true)
+    }
+    
+    @objc
+    private func mapButtonAction() {
+        print("map action")
+    }
+    
+    @objc
+    private func listButtonAction() {
+        print("list action")
+    }
+    
+    private func configureUI() {
+        view.addSubview(toolBar)
+        setupConstraints()
+        setMocks()
+        configurePageControl()
+        configureToolbar()
+    }
+    
+    private func configureToolbar() {
+        let mapButton = UIBarButtonItem(image: UIImage(systemName: "map"),
+                                        style: .done,
+                                        target: self,
+                                        action: #selector(mapButtonAction))
+        
+        let listButton = UIBarButtonItem(image: UIImage(systemName: "list.bullet"),
+                                         style: .done,
+                                         target: self,
+                                         action: #selector(listButtonAction))
+        
+        let pageControl = UIBarButtonItem(customView: pageControl)
+        
+        let flexibleSpace = UIBarButtonItem(systemItem: .flexibleSpace)
+        
+        toolBar.setItems([mapButton, flexibleSpace, pageControl, flexibleSpace, listButton], animated: true)
+    }
+    
+    private func setMocks() {
         let vc1 = WeatherViewController()
         let vc2 = WeatherViewController()
         let vc3 = WeatherViewController()
@@ -48,15 +88,26 @@ final class HomePageViewController: UIPageViewController {
         pages = [vc1, vc2, vc3]
         setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
-
-    @objc
-    private func pageControlDidTap(_ sender: UIPageControl) {
-        setViewControllers([pages[sender.currentPage]], direction: .forward, animated: true)
+    
+    private func setupConstraints() {
+        toolBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+    
+    private func configurePageControl() {
+        pageControl.addTarget(self, action: #selector(pageControlDidTap(_:)), for: .valueChanged)
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        pageControl.numberOfPages = pages.count
+        pageControl.currentPage = initialPage
+        pageControl.tintColor = .white
+        pageControl.pageIndicatorTintColor = .gray
+        pageControl.currentPageIndicatorTintColor = .black
     }
 }
 
 // MARK: - UIPageViewControllerDataSource
-
 extension HomePageViewController: UIPageViewControllerDataSource {
     func pageViewController(
         _ pageViewController: UIPageViewController,
@@ -73,7 +124,6 @@ extension HomePageViewController: UIPageViewControllerDataSource {
 }
 
 // MARK: - UIPageViewControllerDelegate
-
 extension HomePageViewController: UIPageViewControllerDelegate {
     func pageViewController(
         _ pageViewController: UIPageViewController,
