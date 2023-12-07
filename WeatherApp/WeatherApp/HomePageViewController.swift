@@ -8,35 +8,26 @@
 import UIKit
 import SnapKit
 
-// HomePageViewController Will work as a container for your cities  WetherViewControllers
-
-// TODO: - You have to:
-// 1. Learn how UIPageViewController works
-// 2. Add toolbar what you have in the ViewController to this HomePageViewController
 final class HomePageViewController: UIPageViewController {
     
     private let pageControl = UIPageControl()
     private var pages: [UIViewController] = []
     private var initialPage = 0
     
-//MARK: - GUI Variables
-    private lazy var toolBar: UIToolbar = {
-        let toolbar = UIToolbar()
-
-        return toolbar
-    }()
-
-// MARK: - Life Cycle
+    //MARK: - GUI Variables
+    private lazy var toolBar = UIToolbar()
+    
+    // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         dataSource = self
         delegate = self
         
         configureUI()
     }
     
-// MARK: - Private methods
+    // MARK: - Private methods
     @objc
     private func pageControlDidTap(_ sender: UIPageControl) {
         setViewControllers([pages[sender.currentPage]], direction: .forward, animated: true)
@@ -116,7 +107,7 @@ extension HomePageViewController: UIPageViewControllerDataSource {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
         return currentIndex == 0 ? pages.last : pages[currentIndex - 1]
     }
-
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard let currentIndex = pages.firstIndex(of: viewController) else { return nil }
         return currentIndex < pages.count - 1 ? pages[currentIndex + 1] : pages.first
