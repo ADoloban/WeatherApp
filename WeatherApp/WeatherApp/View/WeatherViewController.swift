@@ -22,14 +22,18 @@ final class WeatherViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupUI()
+        loadWeatherData()
+    }
+
+    private func setupUI() {
         view.backgroundColor = .white
         view.addSubview(cityLabel)
-        
-        loadData()
+
         setupConstraints()
     }
-    
-    private func loadData() {
+
+    private func loadWeatherData() {
         let weatherRemoteService = WeatherRemoteService()
         
         weatherRemoteService.getWeather  { result in
