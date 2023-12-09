@@ -45,7 +45,7 @@ final class WeatherViewController: UIViewController {
                     print(text)
                     cityLabel.text = text
                 case .failure(let error):
-                    print("failure")
+                    print("failure: \(error)")
                 }
             }
         }
