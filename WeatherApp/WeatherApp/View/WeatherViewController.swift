@@ -8,7 +8,9 @@
 import UIKit
 
 final class WeatherViewController: UIViewController {
-    
+
+    private let weatherRemoteService = WeatherRemoteService()
+
     private lazy var cityLabel: UILabel = {
         let cityLabel = UILabel()
         cityLabel.textAlignment = .center
@@ -34,8 +36,6 @@ final class WeatherViewController: UIViewController {
     }
 
     private func loadWeatherData() {
-        let weatherRemoteService = WeatherRemoteService()
-        
         weatherRemoteService.getWeather  { result in
             DispatchQueue.main.async { [self] in
                 switch result {
