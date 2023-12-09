@@ -36,7 +36,7 @@ final class WeatherViewController: UIViewController {
     }
 
     private func loadWeatherData() {
-        weatherRemoteService.getWeather  { result in
+        weatherRemoteService.getWeather { result in
             DispatchQueue.main.async { [self] in
                 switch result {
                 case .success(let weatherModel):
