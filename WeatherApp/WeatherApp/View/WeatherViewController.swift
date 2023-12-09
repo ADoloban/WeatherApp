@@ -25,7 +25,6 @@ final class WeatherViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(cityLabel)
         
-        
         loadData()
         setupConstraints()
     }
@@ -45,7 +44,6 @@ final class WeatherViewController: UIViewController {
                     print("failure")
                 }
             }
-            
         }
     }
     
@@ -57,5 +55,3 @@ final class WeatherViewController: UIViewController {
     }
     
 }
-
-

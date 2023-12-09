@@ -93,6 +93,7 @@ final class HomePageViewController: UIPageViewController {
         pageControl.pageIndicatorTintColor = .gray
         pageControl.currentPageIndicatorTintColor = .black
     }
+    
 }
 
 // MARK: - UIPageViewControllerDataSource
