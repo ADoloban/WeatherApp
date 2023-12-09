@@ -16,6 +16,7 @@
 		5A7155D22B1E00B900D57D30 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A7155D12B1E00B900D57D30 /* WeatherViewController.swift */; };
 		D9F57BBF2B2259170097B936 /* WeatherRemoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F57BBE2B2259170097B936 /* WeatherRemoteService.swift */; };
 		D9F57BCE2B2494920097B936 /* WeatherResponceObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F57BCD2B2494920097B936 /* WeatherResponceObject.swift */; };
+		D9F57BD02B2511B90097B936 /* WeatherRemoteServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F57BCF2B2511B90097B936 /* WeatherRemoteServiceError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		5A7155D12B1E00B900D57D30 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		D9F57BBE2B2259170097B936 /* WeatherRemoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRemoteService.swift; sourceTree = "<group>"; };
 		D9F57BCD2B2494920097B936 /* WeatherResponceObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherResponceObject.swift; sourceTree = "<group>"; };
+		D9F57BCF2B2511B90097B936 /* WeatherRemoteServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRemoteServiceError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				D9F57BBE2B2259170097B936 /* WeatherRemoteService.swift */,
+				D9F57BCF2B2511B90097B936 /* WeatherRemoteServiceError.swift */,
 				D9F57BCD2B2494920097B936 /* WeatherResponceObject.swift */,
 			);
 			path = Networking;
@@ -178,6 +181,7 @@
 				D9F57BCE2B2494920097B936 /* WeatherResponceObject.swift in Sources */,
 				5A7155D22B1E00B900D57D30 /* WeatherViewController.swift in Sources */,
 				3C0864702B1B256D00062B19 /* AppDelegate.swift in Sources */,
+				D9F57BD02B2511B90097B936 /* WeatherRemoteServiceError.swift in Sources */,
 				D9F57BBF2B2259170097B936 /* WeatherRemoteService.swift in Sources */,
 				5A2C36392B1DDC30000994E8 /* HomePageViewController.swift in Sources */,
 			);

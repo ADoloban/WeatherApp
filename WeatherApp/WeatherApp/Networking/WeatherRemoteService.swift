@@ -45,20 +45,4 @@ final class WeatherRemoteService {
             completion(.failure(error))
         }
     }
-
-}
-
-enum WeatherRemoteServiceError: Error {
-    case failedNetworkStatusCode
-    case noData
-
-    var description: String {
-        switch self {
-        case .failedNetworkStatusCode:
-            "Network request failed"
-
-        case .noData:
-            "..."
-        }
-    }
 }

@@ -67,5 +67,4 @@ final class WeatherViewController: UIViewController {
             make.top.bottom.equalToSuperview()
         }
     }
-    
 }
