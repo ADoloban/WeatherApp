@@ -73,9 +73,6 @@ final class HomePageViewController: UIPageViewController {
         let vc1 = WeatherViewController()
         let vc2 = WeatherViewController()
         let vc3 = WeatherViewController()
-        vc1.titleText = "Poznan"
-        vc2.titleText = "Prague"
-        vc3.titleText = "Berlin"
         pages = [vc1, vc2, vc3]
         setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
