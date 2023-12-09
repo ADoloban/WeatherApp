@@ -70,9 +70,9 @@ final class HomePageViewController: UIPageViewController {
     }
     
     private func setMocks() {
-        let vc1 = WeatherViewController()
-        let vc2 = WeatherViewController()
-        let vc3 = WeatherViewController()
+        let vc1 = WeatherViewController(city: "London")
+        let vc2 = WeatherViewController(city: "Paris")
+        let vc3 = WeatherViewController(city: "Berlin")
         pages = [vc1, vc2, vc3]
         setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
