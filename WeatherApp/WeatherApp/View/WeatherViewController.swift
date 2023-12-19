@@ -47,21 +47,14 @@ final class WeatherViewController: UIViewController {
 
     private func loadWeatherData() {
         weatherRemoteService.getWeather(for: city) { result in
-            DispatchQueue.main.async { [self] in
+            DispatchQueue.main.async { [weak self] in
                 switch result {
                 case .success(let weatherModel):
-                    print("data is loaded")
+                    print(weatherModel.city.name)
                     print(weatherModel.list[0].main.tempMax)
                     
                 case .failure(let error):
-                    let alertController = UIAlertController(title: "Error",
-                                                            message: error.description,
-                                                            preferredStyle: .alert)
-                    let okAction = UIAlertAction(title: "OK",
-                                                 style: .destructive,
-                                                 handler: nil)
-                    alertController.addAction(okAction)
-                    present(alertController, animated: true, completion: nil)
+                    self?.handleDataError(error: error)
                 }
             }
         }
@@ -72,5 +65,16 @@ final class WeatherViewController: UIViewController {
             make.leading.trailing.equalToSuperview()
             make.top.bottom.equalToSuperview()
         }
+    }
+    
+    private func handleDataError(error: WeatherRemoteServiceError) {
+        let alertController = UIAlertController(title: "Error",
+                                                message: error.description,
+                                                preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK",
+                                     style: .destructive,
+                                     handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
     }
 }

@@ -10,7 +10,9 @@ import UIKit
 final class WeatherRemoteService {
     func getWeather(for city: String, completion: @escaping (Result<WeatherModel, WeatherRemoteServiceError>) -> Void) {
         let urlStr = "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=c9aa4fd43d5fed529ebe21faf8b95eb1&units=metric"
-        guard let url = URL(string: urlStr) else { return }
+        guard let url = URL(string: urlStr) else {
+            return completion(.failure(.urlError))
+        }
 
         let session = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             self?.handleResponce(data: data, response: response, error: error, completion: completion)
@@ -42,7 +44,7 @@ final class WeatherRemoteService {
             let weatherModel = try JSONDecoder().decode(WeatherModel.self, from: data)
             completion(.success(weatherModel))
         } catch {
-            completion(.failure(WeatherRemoteServiceError.jsonDecode))
+            completion(.failure(WeatherRemoteServiceError.jsonDecodeError))
         }
     }
 }

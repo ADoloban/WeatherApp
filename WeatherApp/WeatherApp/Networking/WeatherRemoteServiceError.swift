@@ -10,8 +10,9 @@ import Foundation
 enum WeatherRemoteServiceError: Error {
     case failedNetworkStatusCode
     case noData
-    case jsonDecode
+    case jsonDecodeError
     case defaultError
+    case urlError
 
     var description: String {
         switch self {
@@ -21,11 +22,14 @@ enum WeatherRemoteServiceError: Error {
         case .noData:
             "The data did not come"
         
-        case .jsonDecode:
+        case .jsonDecodeError:
             "Problem with JSONDecoder"
             
         case .defaultError:
             "Error"
+            
+        case .urlError:
+            "Problem with URL"
         }
     }
 }
