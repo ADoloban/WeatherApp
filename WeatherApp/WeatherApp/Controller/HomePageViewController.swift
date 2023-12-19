@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 
 final class HomePageViewController: UIPageViewController {
-    
     private let pageControl = UIPageControl()
     private var pages: [UIViewController] = []
     private var initialPage = 0
@@ -70,12 +69,9 @@ final class HomePageViewController: UIPageViewController {
     }
     
     private func setMocks() {
-        let vc1 = WeatherViewController()
-        let vc2 = WeatherViewController()
-        let vc3 = WeatherViewController()
-        vc1.titleText = "Poznan"
-        vc2.titleText = "Prague"
-        vc3.titleText = "Berlin"
+        let vc1 = WeatherViewController(city: "Tokyo")
+        let vc2 = WeatherViewController(city: "London")
+        let vc3 = WeatherViewController(city: "Istanbul")
         pages = [vc1, vc2, vc3]
         setViewControllers([pages[initialPage]], direction: .forward, animated: true)
     }
@@ -116,12 +112,10 @@ extension HomePageViewController: UIPageViewControllerDataSource {
 
 // MARK: - UIPageViewControllerDelegate
 extension HomePageViewController: UIPageViewControllerDelegate {
-    func pageViewController(
-        _ pageViewController: UIPageViewController,
-        didFinishAnimating finished: Bool,
-        previousViewControllers: [UIViewController],
-        transitionCompleted completed: Bool
-    ) {
+    func pageViewController(_ pageViewController: UIPageViewController,
+                            didFinishAnimating finished: Bool,
+                            previousViewControllers: [UIViewController],
+                            transitionCompleted completed: Bool) {
         guard let viewControllers = pageViewController.viewControllers,
               let currentIndex = pages.firstIndex(of: viewControllers[0]) else {
             return
