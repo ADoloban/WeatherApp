@@ -8,7 +8,7 @@
 import UIKit
 
 final class WeatherRemoteService {
-    func getWeather(for city: String, completion: @escaping (Result<WeatherModel, Error>) -> Void) {
+    func getWeather(for city: String, completion: @escaping (Result<WeatherModel, WeatherRemoteServiceError>) -> Void) {
         let urlStr = "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=c9aa4fd43d5fed529ebe21faf8b95eb1&units=metric"
         guard let url = URL(string: urlStr) else { return }
 
@@ -22,9 +22,9 @@ final class WeatherRemoteService {
     private func handleResponce(data: Data?,
                                 response: URLResponse?,
                                 error: Error?,
-                                completion: @escaping (Result<WeatherModel, Error>) -> Void) {
-        if let error {
-            completion(.failure(error))
+                                completion: @escaping (Result<WeatherModel, WeatherRemoteServiceError>) -> Void) {
+        if error != nil {
+            completion(.failure(WeatherRemoteServiceError.defaultError))
             return
         }
 
@@ -42,7 +42,7 @@ final class WeatherRemoteService {
             let weatherModel = try JSONDecoder().decode(WeatherModel.self, from: data)
             completion(.success(weatherModel))
         } catch {
-            completion(.failure(error))
+            completion(.failure(WeatherRemoteServiceError.jsonDecode))
         }
     }
 }

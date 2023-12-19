@@ -95,8 +95,8 @@
 			isa = PBXGroup;
 			children = (
 				D9F57BBE2B2259170097B936 /* WeatherRemoteService.swift */,
-				D9F57BCF2B2511B90097B936 /* WeatherRemoteServiceError.swift */,
 				D9F57BCD2B2494920097B936 /* WeatherResponceObject.swift */,
+				D9F57BCF2B2511B90097B936 /* WeatherRemoteServiceError.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";

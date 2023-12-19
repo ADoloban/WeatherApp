@@ -50,12 +50,18 @@ final class WeatherViewController: UIViewController {
             DispatchQueue.main.async { [self] in
                 switch result {
                 case .success(let weatherModel):
-                    print("success")
-                    let text = weatherModel.city.name + "\n" + String(weatherModel.list[0].main.temp)
-                    print(text)
-                    cityLabel.text = text
+                    print("data is loaded")
+                    print(weatherModel.list[0].main.tempMax)
+                    
                 case .failure(let error):
-                    print("failure: \(error)")
+                    let alertController = UIAlertController(title: "Error",
+                                                            message: error.description,
+                                                            preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK",
+                                                 style: .destructive,
+                                                 handler: nil)
+                    alertController.addAction(okAction)
+                    present(alertController, animated: true, completion: nil)
                 }
             }
         }
