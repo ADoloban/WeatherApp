@@ -14,8 +14,8 @@ final class WeatherRemoteService {
             return completion(.failure(.urlError))
         }
 
-        let session = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            self?.handleResponce(data: data, response: response, error: error, completion: completion)
+        let session = URLSession.shared.dataTask(with: url) { [weak self] data, response, _ in
+            self?.handleResponce(data: data, response: response, completion: completion)
         }
 
         session.resume()
@@ -23,12 +23,7 @@ final class WeatherRemoteService {
 
     private func handleResponce(data: Data?,
                                 response: URLResponse?,
-                                error: Error?,
                                 completion: @escaping (Result<WeatherModel, WeatherRemoteServiceError>) -> Void) {
-        if error != nil {
-            completion(.failure(WeatherRemoteServiceError.defaultError))
-            return
-        }
 
         guard let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode <= 299 else {
             completion(.failure(WeatherRemoteServiceError.failedNetworkStatusCode))

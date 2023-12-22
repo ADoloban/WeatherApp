@@ -5,7 +5,7 @@
 //  Created by Artem Doloban on 09.12.2023.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - Weather
 struct WeatherModel: Decodable {
@@ -106,6 +106,25 @@ enum Description: String, Decodable {
     case overcastClouds = "overcast clouds"
     case scatteredClouds = "scattered clouds"
     case clearSky = "clear sky"
+    
+    var image: UIImage {
+            switch self {
+            case .brokenClouds:
+                return UIImage(systemName: "cloud.fill") ?? UIImage()
+            case .fewClouds:
+                return UIImage(systemName: "cloud.sun.fill") ?? UIImage()
+            case .lightRain:
+                return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+            case .moderateRain:
+                return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+            case .overcastClouds:
+                return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+            case .scatteredClouds:
+                return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+            case .clearSky:
+                return UIImage(systemName: "sun.max.fill") ?? UIImage()
+            }
+        }
 }
 
 enum MainEnum: String, Decodable {
