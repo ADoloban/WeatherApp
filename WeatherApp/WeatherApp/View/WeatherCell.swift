@@ -46,7 +46,7 @@ class WeatherCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
+        
         setupUI()
     }
     
@@ -60,6 +60,13 @@ class WeatherCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func update(day: String, image: UIImage, minTemperature: Double, maxTemperature: Double) {
+        dayLabel.text = day
+        weatherImageView.image = image
+        minTempLabel.text = "\(minTemperature) \u{2103}"
+        maxTempLabel.text = "\(maxTemperature) \u{2103}"
     }
     
     private func setupUI() {

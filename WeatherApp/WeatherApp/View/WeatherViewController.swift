@@ -9,19 +9,17 @@ import UIKit
 
 final class WeatherViewController: UIViewController {
     let city: String
-
+    
     private let weatherRemoteService = WeatherRemoteService()
     
     private lazy var scrollView = UIScrollView()
-    private lazy var refreshControll = UIRefreshControl()
+    private lazy var refreshControl = UIRefreshControl()
     
     let firstCell = WeatherCell()
     let secondCell = WeatherCell()
     let thirdCell = WeatherCell()
     let fourthCell = WeatherCell()
     let fifthCell = WeatherCell()
-    
-    
     
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -38,36 +36,22 @@ final class WeatherViewController: UIViewController {
     }()
     
     private lazy var cityLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 34)
-        label.textColor = .black
-        label.numberOfLines = 0
-        
-        return label
+        createUILabel()
     }()
     
     private lazy var tempLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 34)
-        label.textColor = .black
-        label.numberOfLines = 0
-        
-        return label
+        createUILabel()
     }()
     
     private lazy var feelsLikeLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 34)
-        label.textColor = .black
-        label.numberOfLines = 0
-        
-        return label
+        createUILabel()
     }()
     
     private lazy var humidityLabel: UILabel = {
+        createUILabel()
+    }()
+    
+    private func createUILabel() -> UILabel {
         let label = UILabel()
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 34)
@@ -75,8 +59,8 @@ final class WeatherViewController: UIViewController {
         label.numberOfLines = 0
         
         return label
-    }()
-
+    }
+    
     init(city: String) {
         self.city = city
         super.init(nibName: nil, bundle: nil)
@@ -88,65 +72,45 @@ final class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        refreshControll.beginRefreshing()
         setupUI()
         loadWeatherData()
+        setupRefreshControl()
     }
-
+    
+    private func setupRefreshControl() {
+        scrollView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
+    }
+    
     private func setupUI() {
-        scrollView.refreshControl = refreshControll
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(cityLabel)
         scrollView.addSubview(tempLabel)
         scrollView.addSubview(feelsLikeLabel)
         scrollView.addSubview(humidityLabel)
+        
+        stackView.addArrangedSubview(firstCell)
+        stackView.addArrangedSubview(secondCell)
+        stackView.addArrangedSubview(thirdCell)
+        stackView.addArrangedSubview(fourthCell)
+        stackView.addArrangedSubview(fifthCell)
+        
         scrollView.addSubview(stackView)
         setupConstraints()
         
-        refreshControll.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
     }
-
+    
     private func loadWeatherData() {
+        refreshControl.beginRefreshing()
         weatherRemoteService.getWeather(for: city) { result in
             DispatchQueue.main.async { [weak self] in
+                self?.refreshControl.endRefreshing()
                 switch result {
                 case .success(let weatherModel):
-                    print(weatherModel.list[0].weather.count)
-                    self?.cityLabel.text = weatherModel.city.name
-                    self?.tempLabel.text = String(weatherModel.list.first?.main.temp ?? 0) + " \u{2103}"
-                    self?.feelsLikeLabel.text = "Feels like: " + String(weatherModel.list.first?.main.feelsLike ?? 0)
-                    self?.humidityLabel.text = "Humidity: " + String(weatherModel.list.first?.main.humidity ?? 0) + "%"
-                    
-                    self?.stackView.addArrangedSubview(WeatherCell(day: "Mon",
-                                                                   image: weatherModel.list[0].weather[0].description.image,
-                                                                   minT: weatherModel.list[0].main.tempMin,
-                                                                   maxT: weatherModel.list[0].main.tempMax))
-                    
-                    self?.stackView.addArrangedSubview(WeatherCell(day: "Tue",
-                                                                   image: weatherModel.list[9].weather[0].description.image,
-                                                                   minT: weatherModel.list[9].main.tempMin,
-                                                                   maxT: weatherModel.list[9].main.tempMax))
-                    
-                    self?.stackView.addArrangedSubview(WeatherCell(day: "Wed",
-                                                                   image: weatherModel.list[17].weather[0].description.image,
-                                                                   minT: weatherModel.list[17].main.tempMin,
-                                                                   maxT: weatherModel.list[17].main.tempMax))
-                    
-                    self?.stackView.addArrangedSubview(WeatherCell(day: "Thu",
-                                                                   image: weatherModel.list[25].weather[0].description.image,
-                                                                   minT: weatherModel.list[25].main.tempMin,
-                                                                   maxT: weatherModel.list[25].main.tempMax))
-                    
-                    self?.stackView.addArrangedSubview(WeatherCell(day: "Fri",
-                                                                   image: weatherModel.list[33].weather[0].description.image,
-                                                                   minT: weatherModel.list[33].main.tempMin,
-                                                                   maxT: weatherModel.list[33].main.tempMax))
-
-                    self?.refreshControll.endRefreshing()
+                    self?.handleDataSuccess(weatherModel: weatherModel)
                 case .failure(let error):
                     self?.handleDataError(error: error)
-                    self?.refreshControll.endRefreshing()
                 }
             }
         }
@@ -155,7 +119,7 @@ final class WeatherViewController: UIViewController {
     @objc
     private func refreshAction() {
         loadWeatherData()
-        refreshControll.endRefreshing()
+        refreshControl.endRefreshing()
     }
     
     private func setupConstraints() {
@@ -201,4 +165,26 @@ final class WeatherViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
+    private func handleDataSuccess(weatherModel: WeatherModel) {
+        print(weatherModel.list[0].weather.count)
+        cityLabel.text = weatherModel.city.name
+        tempLabel.text = String(weatherModel.list.first?.main.temp ?? 0) + " \u{2103}"
+        feelsLikeLabel.text = "Feels like: " + String(weatherModel.list.first?.main.feelsLike ?? 0)
+        humidityLabel.text = "Humidity: " + String(weatherModel.list.first?.main.humidity ?? 0) + "%"
+        if weatherModel.list.count > 33 {
+            updateWeatherCell(cell: firstCell, day: "Пн", image: weatherModel.list[0].weather[0].description.image, minT: weatherModel.list[0].main.tempMin, maxT: weatherModel.list[0].main.tempMax)
+            
+            updateWeatherCell(cell: secondCell, day: "Вт", image: weatherModel.list[9].weather[0].description.image, minT: weatherModel.list[9].main.tempMin, maxT: weatherModel.list[9].main.tempMax)
+            
+            updateWeatherCell(cell: thirdCell, day: "Ср", image: weatherModel.list[17].weather[0].description.image, minT: weatherModel.list[17].main.tempMin, maxT: weatherModel.list[17].main.tempMax)
+            
+            updateWeatherCell(cell: fourthCell, day: "Чт", image: weatherModel.list[25].weather[0].description.image, minT: weatherModel.list[25].main.tempMin, maxT: weatherModel.list[25].main.tempMax)
+            
+            updateWeatherCell(cell: fifthCell, day: "Пт", image: weatherModel.list[33].weather[0].description.image, minT: weatherModel.list[33].main.tempMin, maxT: weatherModel.list[33].main.tempMax)
+        }
+    }
+    
+    private func updateWeatherCell(cell: WeatherCell, day: String, image: UIImage, minT: Double, maxT: Double) {
+        cell.update(day: day, image: image, minTemperature: minT, maxTemperature: maxT)
+    }
 }
