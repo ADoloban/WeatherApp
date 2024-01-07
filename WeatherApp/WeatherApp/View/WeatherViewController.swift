@@ -15,18 +15,12 @@ final class WeatherViewController: UIViewController {
     private lazy var scrollView = UIScrollView()
     private lazy var refreshControl = UIRefreshControl()
     
-    let firstCell = WeatherCell()
-    let secondCell = WeatherCell()
-    let thirdCell = WeatherCell()
-    let fourthCell = WeatherCell()
-    let fifthCell = WeatherCell()
-    
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.distribution = .fill
-        stackView.layer.borderWidth = 1.0
+        stackView.layer.borderWidth = 0.5
         stackView.layer.borderColor = UIColor.black.cgColor
         stackView.layer.cornerRadius = 10.0
         stackView.spacing = 15
@@ -89,16 +83,8 @@ final class WeatherViewController: UIViewController {
         scrollView.addSubview(tempLabel)
         scrollView.addSubview(feelsLikeLabel)
         scrollView.addSubview(humidityLabel)
-        
-        stackView.addArrangedSubview(firstCell)
-        stackView.addArrangedSubview(secondCell)
-        stackView.addArrangedSubview(thirdCell)
-        stackView.addArrangedSubview(fourthCell)
-        stackView.addArrangedSubview(fifthCell)
-        
         scrollView.addSubview(stackView)
         setupConstraints()
-        
     }
     
     private func loadWeatherData() {
@@ -168,23 +154,26 @@ final class WeatherViewController: UIViewController {
     private func handleDataSuccess(weatherModel: WeatherModel) {
         print(weatherModel.list[0].weather.count)
         cityLabel.text = weatherModel.city.name
+        let weatherByWeekDay = mapWeatherModelToDailyWeather(from: weatherModel)
         tempLabel.text = String(weatherModel.list.first?.main.temp ?? 0) + " \u{2103}"
         feelsLikeLabel.text = "Feels like: " + String(weatherModel.list.first?.main.feelsLike ?? 0)
         humidityLabel.text = "Humidity: " + String(weatherModel.list.first?.main.humidity ?? 0) + "%"
-        if weatherModel.list.count > 33 {
-            updateWeatherCell(cell: firstCell, day: "Пн", image: weatherModel.list[0].weather[0].description.image, minT: weatherModel.list[0].main.tempMin, maxT: weatherModel.list[0].main.tempMax)
-            
-            updateWeatherCell(cell: secondCell, day: "Вт", image: weatherModel.list[9].weather[0].description.image, minT: weatherModel.list[9].main.tempMin, maxT: weatherModel.list[9].main.tempMax)
-            
-            updateWeatherCell(cell: thirdCell, day: "Ср", image: weatherModel.list[17].weather[0].description.image, minT: weatherModel.list[17].main.tempMin, maxT: weatherModel.list[17].main.tempMax)
-            
-            updateWeatherCell(cell: fourthCell, day: "Чт", image: weatherModel.list[25].weather[0].description.image, minT: weatherModel.list[25].main.tempMin, maxT: weatherModel.list[25].main.tempMax)
-            
-            updateWeatherCell(cell: fifthCell, day: "Пт", image: weatherModel.list[33].weather[0].description.image, minT: weatherModel.list[33].main.tempMin, maxT: weatherModel.list[33].main.tempMax)
-        }
+        updateDaysWeatherStackView(with: weatherByWeekDay)
     }
     
-    private func updateWeatherCell(cell: WeatherCell, day: String, image: UIImage, minT: Double, maxT: Double) {
-        cell.update(day: day, image: image, minTemperature: minT, maxTemperature: maxT)
+    private func mapWeatherModelToDailyWeather(from weatherModel: WeatherModel) -> [List] {
+        var weatherByWeekDay: [List] = []
+        for list in weatherModel.list {
+            guard !weatherByWeekDay.contains(where: { $0.weekDay == list.weekDay }) else { continue }
+            weatherByWeekDay.append(list)
+        }
+        return weatherByWeekDay
+    }
+    
+    private  func updateDaysWeatherStackView(with weather: [List]) {
+        stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        weather.forEach {
+            stackView.addArrangedSubview(WeatherDayView(weather: $0))
+        }
     }
 }

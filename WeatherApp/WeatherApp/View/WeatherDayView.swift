@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class WeatherDayView: UITableViewCell {
+class WeatherDayView: UIView {
     let dayLabel: UILabel = {
         let dayLabel = UILabel()
         dayLabel.textAlignment = .left
@@ -44,29 +44,22 @@ class WeatherDayView: UITableViewCell {
         return label
     }()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         
         setupUI()
-    }
-    
-    convenience init (day: String, image: UIImage?, minT: Double?, maxT: Double?) {
-        self.init()
-        dayLabel.text = day
-        weatherImageView.image = image ?? UIImage()
-        minTempLabel.text = String(minT ?? 0) + "°C"
-        maxTempLabel.text = String(maxT ?? 0) + "°C"
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(day: String, image: UIImage, minTemperature: Double, maxTemperature: Double) {
-        dayLabel.text = day
-        weatherImageView.image = image
-        minTempLabel.text = "\(minTemperature) \u{2103}"
-        maxTempLabel.text = "\(maxTemperature) \u{2103}"
+    convenience init(weather: List) {
+        self.init()
+        dayLabel.text = weather.weekDay
+        weatherImageView.image = weather.weather.first?.description.image
+        minTempLabel.text = String(weather.main.tempMin) + "°C"
+        maxTempLabel.text = String(weather.main.tempMax) + "°C"
     }
     
     private func setupUI() {
@@ -82,25 +75,23 @@ class WeatherDayView: UITableViewCell {
         dayLabel.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.leading.equalToSuperview().inset(15)
-            make.width.equalToSuperview().multipliedBy(2.0 / 8.0)
+            make.width.equalToSuperview().multipliedBy(2.5 / 8.0)
         }
         
         weatherImageView.snp.makeConstraints { make in
             make.leading.equalTo(dayLabel.snp.trailing).offset(20)
-            make.centerY.equalToSuperview()
             make.width.height.equalTo(25)
-            
         }
         
         minTempLabel.snp.makeConstraints { make in
             make.leading.equalTo(weatherImageView.snp.trailing).offset(20)
-            make.width.equalToSuperview().multipliedBy(2.0 / 8.0)
+            make.width.equalToSuperview().multipliedBy(1.75 / 8.0)
             make.centerY.equalToSuperview()
         }
         
         maxTempLabel.snp.makeConstraints { make in
             make.leading.equalTo(minTempLabel.snp.trailing).offset(8)
-            make.width.equalToSuperview().multipliedBy(2.0 / 8.0)
+            make.width.equalToSuperview().multipliedBy(1.75 / 8.0)
             make.centerY.equalToSuperview()
             make.trailing.equalToSuperview().inset(15)
         }
