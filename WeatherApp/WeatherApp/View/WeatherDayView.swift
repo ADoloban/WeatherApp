@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class WeatherCell: UITableViewCell {
+class WeatherDayView: UITableViewCell {
     let dayLabel: UILabel = {
         let dayLabel = UILabel()
         dayLabel.textAlignment = .left
