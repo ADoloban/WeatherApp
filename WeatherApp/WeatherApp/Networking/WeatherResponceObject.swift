@@ -1,100 +1,93 @@
-//
+////
 //  WeatherResponceObject.swift
 //  WeatherApp
 //
 //  Created by Artem Doloban on 09.12.2023.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - Weather
 struct WeatherModel: Decodable {
-    let cod: String
-    let message, cnt: Int
     let list: [List]
     let city: City
 }
 
 // MARK: - City
 struct City: Decodable {
-    let id: Int
     let name: String
-    let coord: Coord
-    let country: String
-    let population, timezone, sunrise, sunset: Int
-}
-
-// MARK: - Coord
-struct Coord: Decodable {
-    let lat, lon: Double
+    let timezone: Int
 }
 
 // MARK: - List
 struct List: Decodable {
     let dt: Int
+    let dtTxt: String
     let main: MainClass
     let weather: [Weather]
-    let clouds: Clouds
-    let wind: Wind
-    let visibility: Int
-    let pop: Double
-    let rain: Rain?
-    let sys: Sys
-    let dtTxt: String
 
     enum CodingKeys: String, CodingKey {
-        case dt, main, weather, clouds, wind, visibility, pop, rain, sys
+        case dt, main, weather
         case dtTxt = "dt_txt"
     }
-}
 
-// MARK: - Clouds
-struct Clouds: Decodable {
-    let all: Int
+    var weekDay: String {
+        let dateFormatter = DateFormatter()
+        let date = Date(timeIntervalSince1970: TimeInterval(dt))
+        let weekday = Calendar.current.component(.weekday, from: date)
+        return dateFormatter.weekdaySymbols[weekday - 1]
+    }
+    
+    var hour: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        var hourFromDate: Int = 0
+        
+        if let date = dateFormatter.date(from: dtTxt){
+            hourFromDate = Calendar.current.component(.hour, from: date)
+        }
+        
+        switch hourFromDate {
+        case 0:
+            return "00"
+        case 3:
+            return "03"
+        case 6:
+            return "06"
+        case 9:
+            return "09"
+        case 12:
+            return "12"
+        case 15:
+            return "15"
+        case 18:
+            return "18"
+        case 21:
+            return "21"
+        default:
+            return "  "
+        }
+    }
+    
 }
 
 // MARK: - MainClass
 struct MainClass: Decodable {
     let temp, feelsLike, tempMin, tempMax: Double
-    let pressure, seaLevel, grndLevel, humidity: Int
-    let tempKf: Double
+    let pressure, humidity: Int
 
     enum CodingKeys: String, CodingKey {
         case temp
         case feelsLike = "feels_like"
         case tempMin = "temp_min"
         case tempMax = "temp_max"
-        case pressure
-        case seaLevel = "sea_level"
-        case grndLevel = "grnd_level"
-        case humidity
-        case tempKf = "temp_kf"
+        case pressure = "pressure"
+        case humidity = "humidity"
     }
-}
-
-// MARK: - Rain
-struct Rain: Decodable {
-    let the3H: Double
-
-    enum CodingKeys: String, CodingKey {
-        case the3H = "3h"
-    }
-}
-
-// MARK: - Sys
-struct Sys: Decodable {
-    let pod: Pod
-}
-
-enum Pod: String, Decodable {
-    case d = "d"
-    case n = "n"
 }
 
 // MARK: - Weather
 struct Weather: Decodable {
-    let id: Int
-    let main: MainEnum
     let description: Description
 }
 
@@ -106,17 +99,23 @@ enum Description: String, Decodable {
     case overcastClouds = "overcast clouds"
     case scatteredClouds = "scattered clouds"
     case clearSky = "clear sky"
-}
 
-enum MainEnum: String, Decodable {
-    case clouds = "Clouds"
-    case rain = "Rain"
-    case clear = "Clear"
-}
-
-// MARK: - Wind
-struct Wind: Codable {
-    let speed: Double
-    let deg: Int
-    let gust: Double
+    var image: UIImage {
+        switch self {
+        case .brokenClouds:
+            return UIImage(systemName: "cloud.fill") ?? UIImage()
+        case .fewClouds:
+            return UIImage(systemName: "cloud.sun.fill") ?? UIImage()
+        case .lightRain:
+            return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+        case .moderateRain:
+            return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+        case .overcastClouds:
+            return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+        case .scatteredClouds:
+            return UIImage(systemName: "cloud.sun.rain.fill") ?? UIImage()
+        case .clearSky:
+            return UIImage(systemName: "sun.max.fill") ?? UIImage()
+        }
+    }
 }

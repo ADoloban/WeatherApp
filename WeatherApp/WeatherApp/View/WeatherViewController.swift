@@ -9,19 +9,65 @@ import UIKit
 
 final class WeatherViewController: UIViewController {
     let city: String
-
+    
     private let weatherRemoteService = WeatherRemoteService()
-
-    private lazy var cityLabel: UILabel = {
-        let cityLabel = UILabel()
-        cityLabel.textAlignment = .center
-        cityLabel.font = .systemFont(ofSize: 34)
-        cityLabel.textColor = .black
-        cityLabel.numberOfLines = 0
+    
+    private lazy var scrollView = UIScrollView()
+    private lazy var refreshControl = UIRefreshControl()
+    
+    private lazy var dayStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.layer.borderWidth = 0.5
+        stackView.layer.borderColor = UIColor.black.cgColor
+        stackView.layer.cornerRadius = 10.0
+        stackView.spacing = 15
+        stackView.clipsToBounds = true
         
-        return cityLabel
+        return stackView
     }()
-
+    
+    private lazy var hourStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.layer.borderWidth = 0.5
+        stackView.layer.borderColor = UIColor.black.cgColor
+        stackView.layer.cornerRadius = 10.0
+        stackView.spacing = 15
+        stackView.clipsToBounds = true
+        return stackView
+    }()
+    
+    private lazy var cityLabel: UILabel = {
+        createUILabel()
+    }()
+    
+    private lazy var tempLabel: UILabel = {
+        createUILabel()
+    }()
+    
+    private lazy var feelsLikeLabel: UILabel = {
+        createUILabel()
+    }()
+    
+    private lazy var humidityLabel: UILabel = {
+        createUILabel()
+    }()
+    
+    private func createUILabel() -> UILabel {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 34)
+        label.textColor = .black
+        label.numberOfLines = 0
+        
+        return label
+    }
+    
     init(city: String) {
         self.city = city
         super.init(nibName: nil, bundle: nil)
@@ -33,26 +79,36 @@ final class WeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
         loadWeatherData()
+        setupRefreshControl()
     }
-
+    
+    private func setupRefreshControl() {
+        scrollView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
+    }
+    
     private func setupUI() {
         view.backgroundColor = .white
-        view.addSubview(cityLabel)
-
+        view.addSubview(scrollView)
+        scrollView.addSubview(cityLabel)
+        scrollView.addSubview(tempLabel)
+        scrollView.addSubview(feelsLikeLabel)
+        scrollView.addSubview(humidityLabel)
+        scrollView.addSubview(dayStackView)
+        scrollView.addSubview(hourStackView)
         setupConstraints()
     }
-
+    
     private func loadWeatherData() {
+        refreshControl.beginRefreshing()
         weatherRemoteService.getWeather(for: city) { result in
             DispatchQueue.main.async { [weak self] in
+                self?.refreshControl.endRefreshing()
                 switch result {
                 case .success(let weatherModel):
-                    print(weatherModel.city.name)
-                    print(weatherModel.list[0].main.tempMax)
-                    
+                    self?.handleDataSuccess(weatherModel: weatherModel)
                 case .failure(let error):
                     self?.handleDataError(error: error)
                 }
@@ -60,10 +116,46 @@ final class WeatherViewController: UIViewController {
         }
     }
     
+    @objc
+    private func refreshAction() {
+        loadWeatherData()
+        refreshControl.endRefreshing()
+    }
+    
     private func setupConstraints() {
+        scrollView.snp.makeConstraints { make in
+            make.leading.trailing.top.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
         cityLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview()
+            make.centerX.equalTo(scrollView.snp.centerX)
+            make.top.equalTo(scrollView.snp.top).inset(20)
+        }
+        
+        tempLabel.snp.makeConstraints { make in
+            make.centerX.equalTo(scrollView.snp.centerX)
+            make.top.equalTo(cityLabel.snp.bottom)
+        }
+        
+        feelsLikeLabel.snp.makeConstraints { make in
+            make.centerX.equalTo(scrollView.snp.centerX)
+            make.top.equalTo(tempLabel.snp.bottom)
+        }
+        
+        humidityLabel.snp.makeConstraints { make in
+            make.centerX.equalTo(scrollView.snp.centerX)
+            make.top.equalTo(feelsLikeLabel.snp.bottom)
+        }
+        
+        dayStackView.snp.makeConstraints { make in
+            make.top.equalTo(humidityLabel.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+        }
+        
+        hourStackView.snp.makeConstraints { make in
+            make.top.equalTo(dayStackView.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(100)
         }
     }
     
@@ -76,5 +168,40 @@ final class WeatherViewController: UIViewController {
                                      handler: nil)
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
+    }
+    
+    private func handleDataSuccess(weatherModel: WeatherModel) {
+        cityLabel.text = weatherModel.city.name
+        let weatherByWeekDay = mapWeatherModelToDailyWeather(from: weatherModel)
+        tempLabel.text = String(weatherModel.list.first?.main.temp ?? 0) + " \u{2103}"
+        feelsLikeLabel.text = "Feels like: " + String(weatherModel.list.first?.main.feelsLike ?? 0)
+        humidityLabel.text = "Humidity: " + String(weatherModel.list.first?.main.humidity ?? 0) + "%"
+        updateDaysWeatherStackView(with: weatherByWeekDay)
+        updateHourWeatherStackView(with: weatherModel)
+    }
+    
+    private func mapWeatherModelToDailyWeather(from weatherModel: WeatherModel) -> [List] {
+        var weatherByWeekDay: [List] = []
+        for list in weatherModel.list {
+            guard !weatherByWeekDay.contains(where: { $0.weekDay == list.weekDay }) else { continue }
+            weatherByWeekDay.append(list)
+        }
+        return weatherByWeekDay
+    }
+    
+    private func updateDaysWeatherStackView(with weather: [List]) {
+        dayStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        weather.forEach {
+            dayStackView.addArrangedSubview(WeatherDayView(weather: $0))
+        }
+    }
+    
+    private func updateHourWeatherStackView(with weather: WeatherModel) {
+        hourStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for i in 0..<8 {
+            let weatherHour = weather.list[i]
+            print(weatherHour.hour)
+            hourStackView.addArrangedSubview(WeatherHourView( weatherHour ))
+        }
     }
 }
