@@ -37,6 +37,38 @@ struct List: Decodable {
         let weekday = Calendar.current.component(.weekday, from: date)
         return dateFormatter.weekdaySymbols[weekday - 1]
     }
+    
+    var hour: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        var hourFromDate: Int = 0
+        
+        if let date = dateFormatter.date(from: dtTxt){
+            hourFromDate = Calendar.current.component(.hour, from: date)
+        }
+        
+        switch hourFromDate {
+        case 0:
+            return "00"
+        case 3:
+            return "03"
+        case 6:
+            return "06"
+        case 9:
+            return "09"
+        case 12:
+            return "12"
+        case 15:
+            return "15"
+        case 18:
+            return "18"
+        case 21:
+            return "21"
+        default:
+            return "  "
+        }
+    }
+    
 }
 
 // MARK: - MainClass
@@ -49,8 +81,8 @@ struct MainClass: Decodable {
         case feelsLike = "feels_like"
         case tempMin = "temp_min"
         case tempMax = "temp_max"
-        case pressure
-        case humidity
+        case pressure = "pressure"
+        case humidity = "humidity"
     }
 }
 

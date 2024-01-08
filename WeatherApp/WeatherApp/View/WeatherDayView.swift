@@ -14,8 +14,6 @@ class WeatherDayView: UIView {
         dayLabel.textAlignment = .left
         dayLabel.font = UIFont.boldSystemFont(ofSize: 20)
         dayLabel.textColor = .black
-        dayLabel.layer.cornerRadius = 8.0
-        dayLabel.clipsToBounds = true
         
         return dayLabel
     }()
@@ -27,8 +25,6 @@ class WeatherDayView: UIView {
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textColor = .black
-        label.layer.cornerRadius = 8.0
-        label.clipsToBounds = true
         
         return label
     }()
@@ -38,8 +34,6 @@ class WeatherDayView: UIView {
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textColor = .black
-        label.layer.cornerRadius = 8.0
-        label.clipsToBounds = true
         
         return label
     }()

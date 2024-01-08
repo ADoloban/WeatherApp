@@ -15,7 +15,7 @@ final class WeatherViewController: UIViewController {
     private lazy var scrollView = UIScrollView()
     private lazy var refreshControl = UIRefreshControl()
     
-    private lazy var stackView: UIStackView = {
+    private lazy var dayStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -26,6 +26,19 @@ final class WeatherViewController: UIViewController {
         stackView.spacing = 15
         stackView.clipsToBounds = true
         
+        return stackView
+    }()
+    
+    private lazy var hourStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.layer.borderWidth = 0.5
+        stackView.layer.borderColor = UIColor.black.cgColor
+        stackView.layer.cornerRadius = 10.0
+        stackView.spacing = 15
+        stackView.clipsToBounds = true
         return stackView
     }()
     
@@ -83,7 +96,8 @@ final class WeatherViewController: UIViewController {
         scrollView.addSubview(tempLabel)
         scrollView.addSubview(feelsLikeLabel)
         scrollView.addSubview(humidityLabel)
-        scrollView.addSubview(stackView)
+        scrollView.addSubview(dayStackView)
+        scrollView.addSubview(hourStackView)
         setupConstraints()
     }
     
@@ -133,10 +147,15 @@ final class WeatherViewController: UIViewController {
             make.top.equalTo(feelsLikeLabel.snp.bottom)
         }
         
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(humidityLabel.snp.bottom).offset(16)
-            make.width.equalTo(UIScreen.main.bounds.width - 10)
+        dayStackView.snp.makeConstraints { make in
+            make.top.equalTo(humidityLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
+        }
+        
+        hourStackView.snp.makeConstraints { make in
+            make.top.equalTo(dayStackView.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(100)
         }
     }
     
@@ -152,13 +171,13 @@ final class WeatherViewController: UIViewController {
     }
     
     private func handleDataSuccess(weatherModel: WeatherModel) {
-        print(weatherModel.list[0].weather.count)
         cityLabel.text = weatherModel.city.name
         let weatherByWeekDay = mapWeatherModelToDailyWeather(from: weatherModel)
         tempLabel.text = String(weatherModel.list.first?.main.temp ?? 0) + " \u{2103}"
         feelsLikeLabel.text = "Feels like: " + String(weatherModel.list.first?.main.feelsLike ?? 0)
         humidityLabel.text = "Humidity: " + String(weatherModel.list.first?.main.humidity ?? 0) + "%"
         updateDaysWeatherStackView(with: weatherByWeekDay)
+        updateHourWeatherStackView(with: weatherModel)
     }
     
     private func mapWeatherModelToDailyWeather(from weatherModel: WeatherModel) -> [List] {
@@ -170,10 +189,19 @@ final class WeatherViewController: UIViewController {
         return weatherByWeekDay
     }
     
-    private  func updateDaysWeatherStackView(with weather: [List]) {
-        stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+    private func updateDaysWeatherStackView(with weather: [List]) {
+        dayStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         weather.forEach {
-            stackView.addArrangedSubview(WeatherDayView(weather: $0))
+            dayStackView.addArrangedSubview(WeatherDayView(weather: $0))
+        }
+    }
+    
+    private func updateHourWeatherStackView(with weather: WeatherModel) {
+        hourStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for i in 0..<8 {
+            let weatherHour = weather.list[i]
+            print(weatherHour.hour)
+            hourStackView.addArrangedSubview(WeatherHourView( weatherHour ))
         }
     }
 }
