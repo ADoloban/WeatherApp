@@ -25,12 +25,12 @@ struct List: Decodable {
     let dtTxt: String
     let main: MainClass
     let weather: [Weather]
-
+    
     enum CodingKeys: String, CodingKey {
         case dt, main, weather
         case dtTxt = "dt_txt"
     }
-
+    
     var weekDay: String {
         let dateFormatter = DateFormatter()
         let date = Date(timeIntervalSince1970: TimeInterval(dt))
@@ -68,14 +68,13 @@ struct List: Decodable {
             return "  "
         }
     }
-    
 }
 
 // MARK: - MainClass
 struct MainClass: Decodable {
     let temp, feelsLike, tempMin, tempMax: Double
     let pressure, humidity: Int
-
+    
     enum CodingKeys: String, CodingKey {
         case temp
         case feelsLike = "feels_like"
@@ -99,7 +98,7 @@ enum Description: String, Decodable {
     case overcastClouds = "overcast clouds"
     case scatteredClouds = "scattered clouds"
     case clearSky = "clear sky"
-
+    
     var image: UIImage {
         switch self {
         case .brokenClouds:
