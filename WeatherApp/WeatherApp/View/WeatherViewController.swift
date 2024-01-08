@@ -147,15 +147,17 @@ final class WeatherViewController: UIViewController {
             make.top.equalTo(feelsLikeLabel.snp.bottom)
         }
         
-        dayStackView.snp.makeConstraints { make in
-            make.top.equalTo(humidityLabel.snp.bottom).offset(10)
-            make.centerX.equalToSuperview()
-        }
+        
         
         hourStackView.snp.makeConstraints { make in
-            make.top.equalTo(dayStackView.snp.bottom).offset(10)
+            make.top.equalTo(humidityLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
             make.height.equalTo(100)
+        }
+        
+        dayStackView.snp.makeConstraints { make in
+            make.top.equalTo(hourStackView.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
         }
     }
     
